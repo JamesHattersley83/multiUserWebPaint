@@ -1,2 +1,0 @@
-(this.webpackJsonpclient=this.webpackJsonpclient||[]).push([[0],[,,,function(n,e,t){n.exports=t(10)},,,,,function(n,e,t){},function(n,e,t){},function(n,e,t){"use strict";t.r(e);var c=t(0),r=t.n(c),i=t(2),u=t.n(i);t(8),t(9);var o=function(){return r.a.createElement("h1",null,"multiUserWebPaint")};u.a.render(r.a.createElement(o,null),document.getElementById("root"))}],[[3,1,2]]]);
-//# sourceMappingURL=main.c23ea6e6.chunk.js.map
