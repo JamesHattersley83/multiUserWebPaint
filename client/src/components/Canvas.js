@@ -7,6 +7,9 @@ class Canvas extends Component {
     this.startPosition = this.startPosition.bind(this);
     this.finishPosition = this.finishPosition.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
+
+    this.isPainting = false;
+    this.prevPos = { offsetX: 0, offsetY: 0 };
   }
 
   componentDidMount() {
@@ -19,9 +22,6 @@ class Canvas extends Component {
     this.ctx.lineCap = 'round';
     this.ctx.lineWidth = 5;
   }
-
-  isPainting = false;
-  prevPos = { offsetX: 0, offsetY: 0 };
 
   startPosition({ nativeEvent }) {
     const { offsetX, offsetY } = nativeEvent;
@@ -38,14 +38,12 @@ class Canvas extends Component {
   onMouseMove({ nativeEvent }) {
     if (this.isPainting) {
       const { offsetX, offsetY } = nativeEvent;
-      const offSetData = { offsetX, offsetY };
 
-      this.paint(this.prevPos, offSetData);
+      this.paint(this.prevPos, offsetX, offsetY);
     }
   }
 
-  paint(prevPos, currPos) {
-    const { offsetX, offsetY } = currPos;
+  paint(prevPos, offsetX, offsetY) {
     const { offsetX: x, offsetY: y } = prevPos;
 
     this.ctx.beginPath();
