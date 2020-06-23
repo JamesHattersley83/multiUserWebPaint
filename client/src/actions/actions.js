@@ -1,13 +1,9 @@
 import actionTypes from '../constants/actionTypes';
 
-export const drawEvent = (x, y, data) => {
+export const drawEvent = (coords) => {
   return {
     type: actionTypes.DRAW_EVENT,
-    payload: {
-      x: x,
-      y: y,
-      data: data,
-    },
+    payload: coords,
   };
 };
 

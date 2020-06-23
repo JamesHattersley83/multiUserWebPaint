@@ -5,13 +5,13 @@ const initialState = {
   mouseDown: false,
 };
 
-export default (state = initialState, action = {}) => {
-  console.log(action, state);
+export default (state = initialState, action) => {
+  // console.log(action, state);
   switch (action.type) {
     case constants.DRAW_EVENT:
       return {
         ...state,
-        drawData: [...state.drawData, action.payload],
+        drawData: state.drawData.concat(action.payload),
       };
     case constants.TOGGLE_MOUSEDOWN:
       return {

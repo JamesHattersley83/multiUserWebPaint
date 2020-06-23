@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { drawEvent, mouseDown } from '../actions/actions';
+import { calculation } from '../util/calculation';
 import './Canvas.css';
 
 class Canvas extends Component {
@@ -27,9 +28,13 @@ class Canvas extends Component {
     this.ctx.lineWidth = 5;
   }
 
-  startPosition({ nativeEvent }) {
+  startPosition(e) {
+    this.setState({
+      lastX: e.nativeEvent.offsetX,
+      lastY: e.nativeEvent.offsetY,
+    });
+    console.log(this.state.lastX, this.state.lastY);
     this.props.dispatch(mouseDown(true));
-    this.setState({ lastX: nativeEvent.offsetX, lastY: nativeEvent.offsetY });
   }
 
   finishPosition() {
@@ -37,40 +42,17 @@ class Canvas extends Component {
     this.ctx.beginPath();
   }
 
-  onMouseMove({ nativeEvent }) {
+  onMouseMove(e) {
     if (this.props.draw.mouseDown === true) {
       const { lastX, lastY } = this.state;
-      const { offsetX, offsetY } = nativeEvent;
+      const { offsetX, offsetY } = e.nativeEvent;
 
-      const A = [lastX, lastY];
-      const B = [offsetX, offsetY];
-
-      function slope(a, b) {
-        if (a[0] == b[0]) {
-          return null;
-        }
-
-        return (b[1] - a[1]) / (b[0] - a[0]);
-      }
-
-      function intercept(point, slope) {
-        if (slope === null) {
-          // vertical line
-          return point[0];
-        }
-
-        return point[1] - slope * point[0];
-      }
-
-      const m = slope(A, B);
-      const b = intercept(A, m);
-
-      for (let x = A[0]; x <= B[0]; x++) {
-        let y = m * x + b;
-        this.props.dispatch(drawEvent(x, y, {}));
-      }
-
-      this.setState({ lastX: nativeEvent.offsetX, lastY: nativeEvent.offsetY });
+      const calcArray = calculation(lastX, lastY, offsetX, offsetY);
+      this.props.dispatch(drawEvent(calcArray));
+      this.setState({
+        lastX: e.nativeEvent.offsetX,
+        lastY: e.nativeEvent.offsetY,
+      });
     }
   }
 
@@ -81,11 +63,11 @@ class Canvas extends Component {
   }
 
   render() {
-    console.log('from render', this.props.draw.mouseDown);
     const drawData = this.props.draw.drawData;
+    console.log('drawdata', drawData);
     drawData.forEach((position) => {
-      const { x, y } = position;
-      this.paint(x, y);
+      // console.log(position);
+      this.paint(position.x, position.y);
     });
     return (
       <div>
