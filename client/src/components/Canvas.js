@@ -1,15 +1,20 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { drawEvent, mouseDown } from '../actions/actions';
+import { calculation } from '../util/calculation';
 import './Canvas.css';
 
 class Canvas extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      lastX: 0,
+      lastY: 0,
+    };
+
     this.startPosition = this.startPosition.bind(this);
     this.finishPosition = this.finishPosition.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
-
-    this.isPainting = false;
-    this.prevPos = { offsetX: 0, offsetY: 0 };
   }
 
   componentDidMount() {
@@ -23,37 +28,47 @@ class Canvas extends Component {
     this.ctx.lineWidth = 5;
   }
 
-  startPosition({ nativeEvent }) {
-    const { offsetX, offsetY } = nativeEvent;
-    this.isPainting = true;
-    this.prevPos = { offsetX, offsetY };
+  startPosition(e) {
+    this.setState({
+      lastX: e.nativeEvent.offsetX,
+      lastY: e.nativeEvent.offsetY,
+    });
+    console.log(this.state.lastX, this.state.lastY);
+    this.props.dispatch(mouseDown(true));
   }
 
   finishPosition() {
-    if (this.isPainting) {
-      this.isPainting = false;
-    }
-  }
-
-  onMouseMove({ nativeEvent }) {
-    if (this.isPainting) {
-      const { offsetX, offsetY } = nativeEvent;
-
-      this.paint(this.prevPos, offsetX, offsetY);
-    }
-  }
-
-  paint(prevPos, offsetX, offsetY) {
-    const { offsetX: x, offsetY: y } = prevPos;
-
+    this.props.dispatch(mouseDown(false));
     this.ctx.beginPath();
-    this.ctx.moveTo(x, y);
-    this.ctx.lineTo(offsetX, offsetY);
+  }
+
+  onMouseMove(e) {
+    if (this.props.draw.mouseDown === true) {
+      const { lastX, lastY } = this.state;
+      const { offsetX, offsetY } = e.nativeEvent;
+
+      const calcArray = calculation(lastX, lastY, offsetX, offsetY);
+      this.props.dispatch(drawEvent(calcArray));
+      this.setState({
+        lastX: e.nativeEvent.offsetX,
+        lastY: e.nativeEvent.offsetY,
+      });
+    }
+  }
+
+  paint(currentX, currentY) {
+    this.ctx.beginPath();
+    this.ctx.lineTo(currentX, currentY);
     this.ctx.stroke();
-    this.prevPos = { offsetX, offsetY };
   }
 
   render() {
+    const drawData = this.props.draw.drawData;
+    console.log('drawdata', drawData);
+    drawData.forEach((position) => {
+      // console.log(position);
+      this.paint(position.x, position.y);
+    });
     return (
       <div>
         <canvas
@@ -67,4 +82,10 @@ class Canvas extends Component {
   }
 }
 
-export default Canvas;
+const mapStateToProps = (state) => {
+  return {
+    draw: state.draw,
+  };
+};
+
+export default connect(mapStateToProps)(Canvas);

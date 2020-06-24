@@ -1,0 +1,4 @@
+export default {
+  DRAW_EVENT: 'DRAW_EVENT',
+  TOGGLE_MOUSEDOWN: 'TOGGLE_MOUSEDOWN',
+};
